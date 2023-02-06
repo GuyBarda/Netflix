@@ -8,7 +8,7 @@ interface Props {
     movies: Movie[];
 }
 
-const List = ({ title, movies }: Props) => {
+const MovieList = ({ title, movies }: Props) => {
     const listRef = useRef<HTMLDivElement>(null);
     const [isMove, setIsMove] = useState(false);
 
@@ -52,4 +52,4 @@ const List = ({ title, movies }: Props) => {
     );
 };
 
-export default List;
+export default MovieList;

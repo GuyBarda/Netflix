@@ -3,7 +3,7 @@ import Hero from '../components/Hero';
 import Header from '../components/Header';
 import requests from '../utils/requests';
 import { Movie } from '../typings';
-import List from '../components/List';
+import MovieList from '../components/MovieList';
 
 interface Props {
     netflixOriginals: Movie[];
@@ -48,7 +48,7 @@ const Home = (props: Props) => {
                 />
                 <section className="md:space-y-7">
                     {genres.map((genre) => (
-                        <List
+                        <MovieList
                             title={genre}
                             key={genre}
                             movies={props[genre as keyof typeof props]}
