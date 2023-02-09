@@ -1,14 +1,18 @@
 import Image from 'next/image';
 import { baseUrl } from '../constants/movie';
 import { Movie } from '../typings';
-
+import { useRecoilState } from 'recoil';
 import { FaPlay, FaPlus } from 'react-icons/fa';
+import { modalState, movieState } from '../atoms/modalAtoms';
 
 interface Props {
     randomMovie: Movie;
 }
 
 const Hero = ({ randomMovie }: Props) => {
+    const [showModal, setShowModal] = useRecoilState(modalState);
+    const [currentMovie, setCurrentMovie] = useRecoilState(movieState);
+
     return (
         <div className="flex flex-col space-y-2 py-16 md:space-y-4 lg:h-[65vh] lg:justify-end lg:pb-12">
             <div className="absolute top-0 left-0 -z-10 h-[88vh] w-screen">
@@ -23,19 +27,25 @@ const Hero = ({ randomMovie }: Props) => {
             </div>
 
             <h1 className="text-2xl font-bold md:text-4xl lg:text-7xl">
-                {randomMovie.title}
+                {/* {randomMovie.title} */}
             </h1>
             <h3 className="max-w-xs text-xs text-shadow-md md:max-w-lg md:text-lg lg:max-w-2xl lg:text-2xl">
-                {randomMovie.overview}
+                {/* {randomMovie?.overview} */}
             </h3>
 
             <div className="flex gap-3">
                 <button className="btn-hero">
                     <FaPlay className="btn-hero-icon" /> Play
                 </button>
-                <button className="btn-hero">
+                <button
+                    className="btn-hero"
+                    onClick={() => {
+                        setCurrentMovie(randomMovie);
+                        setShowModal(true);
+                    }}
+                >
                     <FaPlus className="btn-hero-icon" />
-                    My List
+                    More Info
                 </button>
             </div>
         </div>
