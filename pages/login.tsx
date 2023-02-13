@@ -1,5 +1,6 @@
 import Head from 'next/head';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { SubmitHandler } from 'react-hook-form/dist/types';
@@ -30,7 +31,7 @@ const Login = () => {
     };
 
     return (
-        <div className="relative flex flex-col h-screen bg-black md:items-center md:justify-center md:bg-transparent">
+        <div className="relative flex h-screen flex-col bg-black md:items-center md:justify-center md:bg-transparent">
             <Head>
                 <title>Login - Netflix</title>
                 <link rel="icon" href="/favicon.ico" />

@@ -22,7 +22,6 @@ const Modal = () => {
 
     const handleClose = () => {
         setShowModal(false);
-        console.log('hi');
     };
 
     useEffect(() => {
@@ -52,7 +51,10 @@ const Modal = () => {
             className="fixed !top-0 right-0 z-50 mx-auto w-full max-w-5xl overflow-hidden overflow-y-scroll rounded-md scrollbar-hide"
         >
             <>
-                <button className="modal-btn absolute right-5 top-5 !z-40 h-9 w-9 border-none bg-[#181818] hover:bg-[#181818]">
+                <button
+                    onClick={handleClose}
+                    className="modal-btn absolute right-5 top-5 !z-40 h-9 w-9 border-none bg-[#181818] hover:bg-[#181818]"
+                >
                     <XIcon className="h-6 w-6"></XIcon>
                 </button>
 

@@ -48,4 +48,24 @@
     .modal-btn {
         @apply flex h-11 w-11 items-center justify-center rounded-full border-2 border-[gray] bg-[#2a2a2a]/60 transition hover:border-white hover:bg-white/10;
     }
+
+    .plan-preview {
+        @apply relative flex items-center justify-center mx-1.5 h-20 w-[calc(100%/3)] cursor-default rounded-sm bg-[#e50914] font-semibold capitalize shadow md:h-32 lg:mx-8;
+
+        &::after {
+            @apply absolute top-full left-1/2 block -translate-x-1/2 border-8 border-b-0 border-transparent border-t-[#e50914] content-[""];
+        }
+    }
+
+    .t-row {
+        @apply flex flex-wrap items-center font-medium;
+    }
+
+    .td-title {
+        @apply w-full p-2.5 text-center text-sm font-normal text-white md:w-2/5 md:p-3.5 md:text-left md:text-base;
+    }
+
+    .td-feature {
+        @apply w-[calc(100%/3)] p-2.5 text-center md:w-[calc(60%/3)] md:p-3.5;
+    }
 }
