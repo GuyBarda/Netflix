@@ -1,4 +1,5 @@
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/solid';
+import { Product } from '@stripe/firestore-stripe-payments';
 import { useRef, useState } from 'react';
 import { Movie } from '../typings';
 import MoviePreview from './MoviePreview';

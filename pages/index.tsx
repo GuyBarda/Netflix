@@ -1,14 +1,18 @@
 import Head from 'next/head';
-import Hero from '../components/Hero';
-import Header from '../components/Header';
-import requests from '../utils/requests';
-import { Movie } from '../typings';
-import MovieList from '../components/MovieList';
-import useAuth from '../hooks/useAuth';
 import { useRecoilValue } from 'recoil';
 import { modalState } from '../atoms/modalAtoms';
+import { Movie } from '../typings';
+import requests from '../utils/requests';
+import useAuth from '../hooks/useAuth';
+
+import Hero from '../components/Hero';
+import Header from '../components/Header';
+import MovieList from '../components/MovieList';
 import Modal from '../components/Modal';
 import Plans from '../components/Plans';
+import { getProducts, Product } from '@stripe/firestore-stripe-payments';
+import payments from '../lib/stripe';
+import useSubscription from '../hooks/useSubscription';
 
 interface Props {
     netflixOriginals: Movie[];
@@ -19,6 +23,7 @@ interface Props {
     horrorMovies: Movie[];
     romanceMovies: Movie[];
     documentaries: Movie[];
+    products: Product[];
 }
 
 const Home = (props: Props) => {
@@ -32,13 +37,12 @@ const Home = (props: Props) => {
         'romanceMovies',
         'documentaries',
     ];
-    const { loading } = useAuth();
+    const { loading, user } = useAuth();
     const showModal = useRecoilValue(modalState);
-    const subscription = true;
+    const subscription = useSubscription(user);
 
     if (loading || subscription === null) return null;
-
-    if (!subscription) return <Plans />;
+    if (!subscription) return <Plans products={props.products} />;
 
     return (
         <div
@@ -54,21 +58,15 @@ const Home = (props: Props) => {
             <Header />
 
             <main className="relative pl-4 pb-24 lg:space-y-24 lg:pl-16">
-                <Hero
-                    randomMovie={
-                        props.netflixOriginals[
-                            Math.floor(
-                                Math.random() * props.netflixOriginals.length
-                            )
-                        ]
-                    }
-                />
+                <Hero movies={props.netflixOriginals} />
                 <section className="md:space-y-24">
                     {genres.map((genre) => (
                         <MovieList
                             title={genre}
                             key={genre}
-                            movies={props[genre as keyof typeof props]}
+                            movies={
+                                props[genre as keyof typeof props] as Movie[]
+                            }
                         />
                     ))}
                 </section>
@@ -81,6 +79,12 @@ const Home = (props: Props) => {
 export default Home;
 
 export const getServerSideProps = async () => {
+    const products = await getProducts(payments, {
+        includePrices: true,
+        activeOnly: true,
+    })
+        .then((res) => res)
+        .catch((err) => console.log(err));
     const [
         netflixOriginals,
         trendingNow,
@@ -110,6 +114,7 @@ export const getServerSideProps = async () => {
             horrorMovies: horrorMovies.results,
             romanceMovies: romanceMovies.results,
             documentaries: documentaries.results,
+            products,
         },
     };
 };

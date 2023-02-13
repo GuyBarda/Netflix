@@ -1,27 +1,27 @@
 import { CheckIcon } from '@heroicons/react/solid';
-import { useRecoilState } from 'recoil';
-import { productState } from '../atoms/modalAtoms';
-import { Product } from '../typings';
+import { Product } from '@stripe/firestore-stripe-payments';
 
 interface Props {
     selectedPlan: Product;
+    products: Product[];
 }
 
-const Table = ({ selectedPlan }: Props) => {
-    const [products, setProducts] = useRecoilState(productState);
-
+const Table = ({ selectedPlan, products }: Props) => {
     const textColor = (id: string) => {
         return id === selectedPlan.id ? 'text-[#e50914]' : 'text-[gray]';
     };
+
+    console.log(products[0].prices);
 
     return (
         <table>
             <tbody className="divide-y divide-[gray]">
                 <tr className="t-row">
                     <td className="td-title">Monthly price</td>
-                    {products?.map(({ id, price }) => (
+                    {products?.map(({ id, prices }) => (
                         <td className={`td-feature ${textColor(id)}`} key={id}>
-                            {price} USD
+                            {prices[0].unit_amount! / 100}{' '}
+                            {prices[0].currency!.toUpperCase()}
                         </td>
                     ))}
                 </tr>
@@ -47,7 +47,7 @@ const Table = ({ selectedPlan }: Props) => {
                     </td>
                     {products?.map(({ id, metadata }) => (
                         <td className={`td-feature ${textColor(id)}`} key={id}>
-                            {metadata.portability && (
+                            {metadata.portability === 'true' && (
                                 <CheckIcon className="inline-block h-8 w-8" />
                             )}
                         </td>

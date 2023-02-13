@@ -1,24 +1,27 @@
 import { CheckIcon } from '@heroicons/react/solid';
+import { Product } from '@stripe/firestore-stripe-payments';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useState } from 'react';
-import { useRecoilState } from 'recoil';
-import { productState } from '../atoms/modalAtoms';
 import useAuth from '../hooks/useAuth';
-import { Product } from '../typings';
+import { loadCheckout } from '../lib/stripe';
 import Loader from './Loader';
 import Table from './Table';
 
-const Plans = () => {
+interface Props {
+    products: Product[];
+}
+
+const Plans = ({ products }: Props) => {
     const { logout, user } = useAuth();
-    const [products, setProducts] = useRecoilState(productState);
     const [selectedPlan, setSelectedPlan] = useState<Product>(products![0]);
 
     const [billingLoading, setBillingLoading] = useState(false);
 
     const subscribeToPlan = () => {
         if (!user) return;
-        console.log(selectedPlan, user);
+        loadCheckout(selectedPlan?.prices[0].id);
+        setBillingLoading(true);
     };
 
     return (
@@ -81,7 +84,7 @@ const Plans = () => {
                         ))}
                     </div>
 
-                    <Table selectedPlan={selectedPlan} />
+                    <Table selectedPlan={selectedPlan} products={products} />
                     <button
                         disabled={!selectedPlan || billingLoading}
                         className={`mx-auto w-11/12 rounded bg-[#E50914] py-4 text-xl shadow hover:bg-[#f6121d] md:w-[420px] ${
@@ -90,7 +93,7 @@ const Plans = () => {
                         onClick={subscribeToPlan}
                     >
                         {billingLoading ? (
-                            <Loader color="dark:fill-gray-900" />
+                            <Loader color="dark:fill-gray-300" />
                         ) : (
                             'Subscribe'
                         )}

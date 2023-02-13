@@ -3,18 +3,6 @@ export interface Genre {
     name: string;
 }
 
-export interface Product {
-    id: string;
-    name: string;
-    active: boolean;
-    price: number;
-    metadata: {
-        videoQuality: string;
-        resolution: string;
-        portability: boolean;
-    };
-}
-
 export interface Movie {
     title: string;
     backdrop_path: string;
