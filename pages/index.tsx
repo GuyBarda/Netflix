@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import { useRecoilValue } from 'recoil';
-import { modalState } from '../atoms/modalAtoms';
+import { modalState, movieState } from '../atoms/modalAtoms';
 import { Movie } from '../typings';
 import requests from '../utils/requests';
 import useAuth from '../hooks/useAuth';
@@ -13,6 +13,7 @@ import Plans from '../components/Plans';
 import { getProducts, Product } from '@stripe/firestore-stripe-payments';
 import payments from '../lib/stripe';
 import useSubscription from '../hooks/useSubscription';
+import useList from '../hooks/useList';
 
 interface Props {
     netflixOriginals: Movie[];
@@ -27,7 +28,7 @@ interface Props {
 }
 
 const Home = (props: Props) => {
-    const genres = [
+    const genres: string[] = [
         'netflixOriginals',
         'trendingNow',
         'topRated',
@@ -40,6 +41,8 @@ const Home = (props: Props) => {
     const { loading, user } = useAuth();
     const showModal = useRecoilValue(modalState);
     const subscription = useSubscription(user);
+    const movie = useRecoilValue(movieState);
+    const myList = useList(user?.uid);
 
     if (loading || subscription === null) return null;
     if (!subscription) return <Plans products={props.products} />;
@@ -59,6 +62,9 @@ const Home = (props: Props) => {
 
             <main className="relative pl-4 pb-24 lg:space-y-24 lg:pl-16">
                 <Hero movies={props.netflixOriginals} />
+                {myList.length && (
+                    <MovieList movies={myList} title={'My List'} />
+                )}
                 <section className="md:space-y-24">
                     {genres.map((genre) => (
                         <MovieList

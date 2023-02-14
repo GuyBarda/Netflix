@@ -1,12 +1,13 @@
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/solid';
 import { Product } from '@stripe/firestore-stripe-payments';
+import { DocumentData } from 'firebase/firestore';
 import { useRef, useState } from 'react';
 import { Movie } from '../typings';
 import MoviePreview from './MoviePreview';
 
 interface Props {
     title: string;
-    movies: Movie[];
+    movies: Movie[] | DocumentData[];
 }
 
 const MovieList = ({ title, movies }: Props) => {
