@@ -18,7 +18,7 @@ const MoviePreview = ({ movie }: { movie: Movie | DocumentData }) => {
         >
             <Image
                 src={`https://image.tmdb.org/t/p/w500${
-                    movie.backdrop_path || movie.poster_path
+                    movie.poster_path || movie.backdrop_path
                 }`}
                 className="rounded-sm object-cover md:rounded"
                 alt=""
