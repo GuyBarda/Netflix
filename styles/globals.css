@@ -15,7 +15,6 @@
     /* Handle */
     ::-webkit-scrollbar-thumb {
         background: #e50914d6;
-        border-radius: 100vw;
     }
 
     /* Handle on hover */
@@ -33,6 +32,9 @@
 }
 
 @layer components {
+    .main-header {
+        box-shadow: inset 0px 50px 50px -30px #000000;
+    }
     .header-link {
         @apply cursor-pointer text-sm font-light text-[#e5e5e5] transition duration-[0.4s] hover:text-[#d3d3d3];
     }

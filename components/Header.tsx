@@ -16,7 +16,8 @@ const Header = () => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    const bgColor = () => (isScrolled ? 'bg-[#141414]' : 'bg-[#141414]/12');
+    const bgColor = () =>
+        isScrolled ? 'bg-[#141414]' : 'bg-[#141414]/12 main-header';
 
     return (
         <header className={bgColor()}>

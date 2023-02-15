@@ -9,10 +9,22 @@ import useAuth from '../hooks/useAuth';
 import useSubscription from '../hooks/useSubscription';
 
 import Membership from '../components/Membership';
+import { useEffect, useState } from 'react';
 
 const account = ({ products }: { products: Product[] }) => {
     const { user, logout, loading } = useAuth();
     const subscription = useSubscription(user);
+    const [date, setDate] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (!subscription) return;
+        setDate(
+            new Intl.DateTimeFormat('en-US', {
+                month: 'long',
+                year: 'numeric',
+            }).format(new Date(subscription.created!))
+        );
+    }, [subscription]);
 
     if (loading) return null;
     return (
@@ -49,8 +61,8 @@ const account = ({ products }: { products: Product[] }) => {
                             alt=""
                             className="h-7 w-7"
                         />
-                        <p className="text-xs font-semibold text-[#555]">
-                            Member since {subscription?.created}
+                        <p className="text-sm font-semibold text-[#555]">
+                            Member since {date}
                         </p>
                     </div>
                 </div>
