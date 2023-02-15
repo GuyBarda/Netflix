@@ -21,7 +21,9 @@ const MoviePreview = ({ movie }: { movie: Movie | DocumentData }) => {
                     movie.poster_path || movie.backdrop_path
                 }`}
                 className="rounded-sm object-cover md:rounded"
-                alt=""
+                alt={
+                    movie.title || movie.original_name || movie.name || 'movie'
+                }
                 fill
                 sizes="260"
             />

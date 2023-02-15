@@ -30,7 +30,7 @@ import MovieList from './MovieList';
 
 const Modal = () => {
     const [trailer, setTrailer] = useState(null);
-    const [similarMovies, setSimilarMovies] = useState(null);
+    const [similarMovies, setSimilarMovies] = useState<Movie[] | null>(null);
     const [muted, setMuted] = useState(true);
     const [genres, setGenres] = useState<Genre[]>([]);
     const [isAddedToMyList, setIsAddedToMyList] = useState(false);
@@ -93,7 +93,8 @@ const Modal = () => {
     const loadSimilars = async (id: string) => {
         const res = await fetch(getSimilars(id));
         const similars = await res.json();
-        setSimilarMovies(similars.results.slice(0, 5));
+        console.log(similarMovies);
+        if (similars) setSimilarMovies(similars.results?.slice(0, 5));
     };
 
     const loadVideo = async () => {
@@ -110,8 +111,10 @@ const Modal = () => {
         const res = await fetch(getCredits(id));
         const { cast, crew } = await res.json();
 
+        if (!cast && !crew) return;
+
         const actors = cast
-            .slice(0, 7)
+            ?.slice(0, 7)
             .map(({ name }: { name: string }) => name);
 
         const director = crew.find(({ job }: any) => job === 'Director');
@@ -151,53 +154,65 @@ const Modal = () => {
                 </button>
 
                 <div className="relative pt-[56.25%]">
-                    <ReactPlayer
-                        url={`https://www.youtube.com/watch?v=${trailer}`}
-                        width="100%"
-                        height="100%"
-                        style={{ position: 'absolute', top: '0', left: '0' }}
-                        playing
-                        muted={muted}
-                    />
-                    <div className="absolute bottom-10 flex w-full items-center justify-between px-10">
-                        <div className=" flex space-x-2">
-                            <button className=" flex items-center gap-x-2 rounded bg-white px-8 text-xl font-bold text-black transition hover:bg-[#e6e6e6]">
-                                <FaPlay className="h-7 w-7 text-black" />
-                                Play
-                            </button>
+                    {trailer ? (
+                        <ReactPlayer
+                            url={`https://www.youtube.com/watch?v=${trailer}`}
+                            width="100%"
+                            height="100%"
+                            style={{
+                                position: 'absolute',
+                                top: '0',
+                                left: '0',
+                            }}
+                            playing
+                            muted={muted}
+                        />
+                    ) : (
+                        <div className="flex justify-center items-center">
+                            <p className=" text-4xl">No trailer found :(</p>
+                        </div>
+                    )}
+                    {trailer && (
+                        <div className="absolute bottom-10 flex w-full items-center justify-between px-10">
+                            <div className=" flex space-x-2">
+                                <button className=" flex items-center gap-x-2 rounded bg-white px-8 text-xl font-bold text-black transition hover:bg-[#e6e6e6]">
+                                    <FaPlay className="h-7 w-7 text-black" />
+                                    Play
+                                </button>
 
+                                <button
+                                    className="modal-btn"
+                                    onClick={handleMyList}
+                                >
+                                    {isAddedToMyList ? (
+                                        <CheckIcon className="h-7 w-7" />
+                                    ) : (
+                                        <PlusIcon className="h-7 w-7" />
+                                    )}
+                                </button>
+                                <button className="modal-btn">
+                                    <ThumbUpIcon className="h-7 w-7" />
+                                </button>
+                            </div>
                             <button
+                                onClick={() => setMuted(!muted)}
                                 className="modal-btn"
-                                onClick={handleMyList}
                             >
-                                {isAddedToMyList ? (
-                                    <CheckIcon className="h-7 w-7" />
+                                {muted ? (
+                                    <VolumeOffIcon className="h-6 w-6" />
                                 ) : (
-                                    <PlusIcon className="h-7 w-7" />
+                                    <VolumeUpIcon className="h-6 w-6" />
                                 )}
                             </button>
-                            <button className="modal-btn">
-                                <ThumbUpIcon className="h-7 w-7" />
-                            </button>
                         </div>
-                        <button
-                            onClick={() => setMuted(!muted)}
-                            className="modal-btn"
-                        >
-                            {muted ? (
-                                <VolumeOffIcon className="h-6 w-6" />
-                            ) : (
-                                <VolumeUpIcon className="h-6 w-6" />
-                            )}
-                        </button>
-                    </div>
+                    )}
                 </div>
                 <div className="rounded-b-md bg-[#181818] px-10">
                     <div className="flex space-x-16 py-8">
                         <div className="space-y-6 text-lg">
                             <div className="flex items-center space-x-2 text-sm">
                                 <p className="font-semibold text-green-400">
-                                    {movie!.vote_average * 10}% Match
+                                    {movie?.vote_average * 10}% Match
                                 </p>
                                 <p className="font-light">
                                     {movie?.release_date ||
@@ -236,7 +251,7 @@ const Modal = () => {
                         </div>
                     </div>
 
-                    {similarMovies && (
+                    {similarMovies && similarMovies?.length > 0 && (
                         <div className="py-8">
                             <MovieList
                                 title="More like this"

@@ -22,7 +22,7 @@ const Hero = ({ movies }: { movies: Movie[] }) => {
             <div className="absolute top-0 left-0 -z-10 h-[95vh] w-full">
                 <Image
                     src={`${baseUrl}${
-                        randomMovie?.backdrop_path || randomMovie?.poster_path
+                        randomMovie?.poster_path || randomMovie?.backdrop_path
                     }`}
                     alt={randomMovie?.name || 'movie'}
                     fill
