@@ -1,4 +1,4 @@
-You can view the website at [netflix-clone.up.railway.app](netflix-clone.up.railway.app)
+You can view the website at [netflix-clone.up.railway.app](https://netflix-clone.up.railway.app)
 
 This application is a clone of Netflix's streaming service and allows users to watch movies and tv shows. I've implemented various features to make this clone as close to the real thing as possible.
 
