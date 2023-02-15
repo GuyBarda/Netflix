@@ -32,7 +32,9 @@ const Hero = ({ movies }: { movies: Movie[] }) => {
             </div>
 
             <h1 className="text-2xl font-bold md:text-4xl lg:text-7xl">
-                {randomMovie?.title}
+                {randomMovie?.title ||
+                    randomMovie?.name ||
+                    randomMovie?.original_name}
             </h1>
             <h3 className="max-w-xs text-sm text-shadow-md md:max-w-lg md:text-lg lg:max-w-2xl lg:text-2xl">
                 {randomMovie?.overview}
