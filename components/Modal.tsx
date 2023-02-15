@@ -111,16 +111,20 @@ const Modal = () => {
         const { cast, crew } = await res.json();
 
         const actors = cast
-            .slice(0, 6)
+            .slice(0, 7)
             .map(({ name }: { name: string }) => name);
 
-        const { name } = crew.find(({ job }: any) => job === 'Director');
+        const director = crew.find(({ job }: any) => job === 'Director');
 
         const writer = crew.find(
             ({ known_for_department }: { known_for_department: string }) =>
                 known_for_department === 'Writing'
         );
-        setCredits({ cast: actors, director: name, writer: writer.name });
+        setCredits({
+            cast: actors,
+            director: director?.name,
+            writer: writer?.name,
+        });
     };
 
     useEffect(() => {
@@ -252,19 +256,19 @@ const Modal = () => {
                                     <span className="text-[gray]">
                                         Playing:{' '}
                                     </span>
-                                    {credits.cast.join(', ')}
+                                    {credits.cast.join(', ') || 'TBA'}
                                 </div>
                                 <div>
                                     <span className="text-[gray]">
                                         Director/s:{' '}
                                     </span>
-                                    {credits.director}
+                                    {credits.director || 'TBA'}
                                 </div>
                                 <div>
                                     <span className="text-[gray]">
                                         Write/s:{' '}
                                     </span>
-                                    {credits.writer}
+                                    {credits.writer || 'TBA'}
                                 </div>
                             </div>
                         </div>
