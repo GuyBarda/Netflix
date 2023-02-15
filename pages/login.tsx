@@ -1,6 +1,5 @@
 import Head from 'next/head';
 import Image from 'next/image';
-import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { SubmitHandler } from 'react-hook-form/dist/types';
@@ -13,6 +12,7 @@ interface Inputs {
 
 const Login = () => {
     const [login, setLogin] = useState(false);
+    const { signIn, signUp } = useAuth();
 
     const {
         register,
@@ -20,14 +20,8 @@ const Login = () => {
         formState: { errors },
     } = useForm<Inputs>();
 
-    const { signIn, signUp } = useAuth();
-
     const onSubmit: SubmitHandler<Inputs> = async ({ email, password }) => {
-        if (login) {
-            await signIn(email, password);
-        } else {
-            await signUp(email, password);
-        }
+        login ? await signIn(email, password) : await signUp(email, password);
     };
 
     return (

@@ -1,3 +1,15 @@
+import { useEffect, useState } from 'react';
+import { useRecoilState } from 'recoil';
+import { modalState, movieState } from '../atoms/modalAtoms';
+import { db } from '../firebase';
+import {
+    collection,
+    deleteDoc,
+    doc,
+    DocumentData,
+    onSnapshot,
+    setDoc,
+} from 'firebase/firestore';
 import {
     CheckIcon,
     PlusIcon,
@@ -7,81 +19,51 @@ import {
     XIcon,
 } from '@heroicons/react/solid';
 import MuiModal from '@mui/material/Modal';
-import {
-    collection,
-    deleteDoc,
-    doc,
-    DocumentData,
-    onSnapshot,
-    setDoc,
-} from 'firebase/firestore';
-import { useEffect, useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import { FaPlay } from 'react-icons/fa';
 import ReactPlayer from 'react-player/lazy';
-import { useRecoilState } from 'recoil';
-import { modalState, movieState } from '../atoms/modalAtoms';
-import { db } from '../firebase';
+
 import useAuth from '../hooks/useAuth';
-import { Element, Genre, Movie } from '../typings';
+import { Credits, Genre, Movie } from '../typings';
+import { getTrailer, getSimilars, getCredits } from '../utils/requests';
+import MovieList from './MovieList';
 
 const Modal = () => {
-    const [showModal, setShowModal] = useRecoilState(modalState);
-    const [movie, setMovie] = useRecoilState(movieState);
     const [trailer, setTrailer] = useState(null);
-    const [genres, setGenres] = useState<Genre[]>([]);
+    const [similarMovies, setSimilarMovies] = useState(null);
     const [muted, setMuted] = useState(true);
+    const [genres, setGenres] = useState<Genre[]>([]);
     const [isAddedToMyList, setIsAddedToMyList] = useState(false);
     const [movies, setMovies] = useState<DocumentData[] | Movie[]>([]);
+    const [credits, setCredits] = useState<Credits | null>(null);
+
+    const [showModal, setShowModal] = useRecoilState(modalState);
+    const [movie, setMovie] = useRecoilState(movieState);
+
     const { user } = useAuth();
 
-    const toastStyle = {
-        color: 'black',
-        fontWeight: 'bold',
-        padding: '15px',
-        borderRadius: '5rem',
+    const toastOptions = {
+        duration: 3000,
+        style: {
+            color: 'black',
+            fontWeight: 'bold',
+            padding: '15px',
+            borderRadius: '5rem',
+        },
     };
 
     const handleMyList = async () => {
-        const duration = 3000;
-        if (isAddedToMyList) {
-            await deleteDoc(
-                doc(db, 'customers', user!.uid, 'myList', movie?.id.toString()!)
-            );
+        isAddedToMyList
+            ? //prettier-ignore
+              await deleteDoc(doc(db, 'customers', user!.uid, 'myList', movie?.id.toString()!))
+            : //prettier-ignore
+              await setDoc(doc(db, 'customers', user!.uid, 'myList', movie?.id.toString()!),{...movie,});
 
-            toast(
-                `${
-                    movie?.title || movie?.original_name
-                } has been added to My List.`,
-                {
-                    duration,
-                    style: toastStyle,
-                }
-            );
-        } else {
-            await setDoc(
-                doc(
-                    db,
-                    'customers',
-                    user!.uid,
-                    'myList',
-                    movie?.id.toString()!
-                ),
-                {
-                    ...movie,
-                }
-            );
+        const msg = `${movie?.title} has been ${
+            isAddedToMyList ? 'removed from' : 'added to'
+        } My List.`;
 
-            toast(
-                `${
-                    movie?.title || movie?.original_name
-                } has been added to My List.`,
-                {
-                    duration,
-                    style: toastStyle,
-                }
-            );
-        }
+        toast(msg, toastOptions);
     };
 
     const handleClose = () => {
@@ -89,15 +71,16 @@ const Modal = () => {
     };
 
     useEffect(() => {
-        if (user) {
-            return onSnapshot(
-                collection(db, 'customers', user.uid, 'myList'),
-                (snapshot) => setMovies(snapshot.docs)
-            );
-        }
+        if (!user) return;
+
+        const unsubscribe = onSnapshot(
+            collection(db, 'customers', user.uid, 'myList'),
+            ({ docs }) => setMovies(docs)
+        );
+
+        return () => unsubscribe();
     }, [db, movie?.id]);
 
-    // Check if the movie is already in the user's list
     useEffect(
         () =>
             setIsAddedToMyList(
@@ -107,24 +90,45 @@ const Modal = () => {
         [movies]
     );
 
+    const loadSimilars = async (id: string) => {
+        const res = await fetch(getSimilars(id));
+        const similars = await res.json();
+        setSimilarMovies(similars.results.slice(0, 5));
+    };
+
+    const loadVideo = async () => {
+        const res = await fetch(getTrailer(movie!));
+        const { videos, genres } = await res.json();
+        const video = videos?.results?.find(
+            ({ type }: { type: string }) => type === 'Trailer'
+        );
+        setTrailer(video?.key);
+        if (genres) setGenres(genres);
+    };
+
+    const loadCredits = async (id: string) => {
+        const res = await fetch(getCredits(id));
+        const { cast, crew } = await res.json();
+
+        const actors = cast
+            .slice(0, 6)
+            .map(({ name }: { name: string }) => name);
+
+        const { name } = crew.find(({ job }: any) => job === 'Director');
+
+        const writer = crew.find(
+            ({ known_for_department }: { known_for_department: string }) =>
+                known_for_department === 'Writing'
+        );
+        setCredits({ cast: actors, director: name, writer: writer.name });
+    };
+
     useEffect(() => {
         if (!movie) return;
-        async function fetchMovie() {
-            const data = await fetch(
-                `https://api.themoviedb.org/3/${
-                    movie?.media_type === 'tv' ? 'tv' : 'movie'
-                }/${movie?.id}?api_key=${
-                    process.env.NEXT_PUBLIC_API_KEY
-                }&language=en-US&append_to_response=videos`
-            ).then((response) => response.json());
 
-            const index = data?.videos?.results?.findIndex(
-                (element: Element) => element.type === 'Trailer'
-            );
-            setTrailer(data?.videos?.results[index]?.key);
-            if (data?.genres) setGenres(data.genres);
-        }
-        fetchMovie();
+        loadVideo();
+        loadSimilars(movie.id);
+        loadCredits(movie.id);
     }, [movie]);
 
     return (
@@ -184,47 +188,87 @@ const Modal = () => {
                         </button>
                     </div>
                 </div>
-
-                <div className="flex space-x-16 rounded-b-md bg-[#181818] px-10 py-8">
-                    <div className="space-y-6 text-lg">
-                        <div className="flex items-center space-x-2 text-sm">
-                            <p className="font-semibold text-green-400">
-                                {movie!.vote_average * 10}% Match
-                            </p>
-                            <p className="font-light">
-                                {movie?.release_date || movie?.first_air_date}
-                            </p>
-                            <div className="flex h-4 items-center justify-center rounded border border-white/40 px-1.5 text-sm">
-                                HD
+                <div className="rounded-b-md bg-[#181818] px-10">
+                    <div className="flex space-x-16 py-8">
+                        <div className="space-y-6 text-lg">
+                            <div className="flex items-center space-x-2 text-sm">
+                                <p className="font-semibold text-green-400">
+                                    {movie!.vote_average * 10}% Match
+                                </p>
+                                <p className="font-light">
+                                    {movie?.release_date ||
+                                        movie?.first_air_date}
+                                </p>
+                                <div className="flex h-4 items-center justify-center rounded border border-white/40 px-1.5 text-sm">
+                                    HD
+                                </div>
                             </div>
-                        </div>
 
-                        <div className="flex flex-col gap-x-10 gap-y-4 font-light md:flex-row">
-                            <p className="w-5/6">{movie?.overview}</p>
-                            <div className="flex flex-col space-y-3 text-sm ">
-                                <div className="">
-                                    <span className="text-[gray]">
-                                        Genres:{' '}
-                                    </span>
-                                    {genres
-                                        .map((genre) => genre.name)
-                                        .join(', ')}
-                                </div>
-                                <div className="">
-                                    <span className="text-[gray]">
-                                        Original language:{' '}
-                                    </span>
-                                    {movie?.original_language}
-                                </div>
-                                <div className="">
-                                    <span className="text-[gray]">
-                                        Total votes:{' '}
-                                    </span>
-                                    {movie?.vote_count}
+                            <div className="flex flex-col gap-x-10 gap-y-4 font-light md:flex-row">
+                                <p className="w-5/6">{movie?.overview}</p>
+                                <div className="flex flex-col space-y-3 text-sm ">
+                                    <div className="">
+                                        <span className="text-[gray]">
+                                            Genres:{' '}
+                                        </span>
+                                        {genres
+                                            .map((genre) => genre.name)
+                                            .join(', ')}
+                                    </div>
+                                    <div className="">
+                                        <span className="text-[gray]">
+                                            Original language:{' '}
+                                        </span>
+                                        {movie?.original_language}
+                                    </div>
+                                    <div className="">
+                                        <span className="text-[gray]">
+                                            Total votes:{' '}
+                                        </span>
+                                        {movie?.vote_count}
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+
+                    {similarMovies && (
+                        <div className="py-8">
+                            <MovieList
+                                title="More like this"
+                                movies={similarMovies}
+                            />
+                        </div>
+                    )}
+
+                    {credits && (
+                        <div className="py-8 font-light ">
+                            <h3 className="w-5/6 text-lg font-bold mb-3">
+                                <span className="font-semibold">About</span>{' '}
+                                {movie?.title}
+                            </h3>
+                            <div className="flex flex-col gap-1 ">
+                                <div>
+                                    <span className="text-[gray]">
+                                        Playing:{' '}
+                                    </span>
+                                    {credits.cast.join(', ')}
+                                </div>
+                                <div>
+                                    <span className="text-[gray]">
+                                        Director/s:{' '}
+                                    </span>
+                                    {credits.director}
+                                </div>
+                                <div>
+                                    <span className="text-[gray]">
+                                        Write/s:{' '}
+                                    </span>
+                                    {credits.writer}
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </>
         </MuiModal>

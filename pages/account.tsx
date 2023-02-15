@@ -1,20 +1,18 @@
-import { getProducts, Product } from '@stripe/firestore-stripe-payments';
 import { GetStaticProps } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
-import { useState } from 'react';
-import Membership from '../components/Membership';
+
+import payments from '../lib/stripe';
+import { getProducts, Product } from '@stripe/firestore-stripe-payments';
+
 import useAuth from '../hooks/useAuth';
 import useSubscription from '../hooks/useSubscription';
-import payments from '../lib/stripe';
 
-interface Props {
-    products: Product[];
-}
-const account = ({ products }: Props) => {
+import Membership from '../components/Membership';
+
+const account = ({ products }: { products: Product[] }) => {
     const { user, logout, loading } = useAuth();
     const subscription = useSubscription(user);
-    const [isBillingLoading, setBillingLoading] = useState(false);
 
     if (loading) return null;
     return (
@@ -61,7 +59,6 @@ const account = ({ products }: Props) => {
 
                 <div className="mt-6 grid grid-cols-1 gap-x-4 border px-4 py-4 md:grid-cols-4 md:border-x-0 md:border-t md:border-b-0 md:px-0 md:pb-0">
                     <h4 className="text-lg text-[gray]">Plan Details</h4>
-                    {/* Find the current plan */}
                     <div className="col-span-2 font-medium">
                         {
                             products.filter(

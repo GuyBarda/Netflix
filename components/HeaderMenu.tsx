@@ -1,9 +1,9 @@
+import { useState } from 'react';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import { useState } from 'react';
 
-const HeaderMenu = () => {
+const HeaderMenu = ({ links }: { links: string[] }) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
 
@@ -37,11 +37,11 @@ const HeaderMenu = () => {
                     'aria-labelledby': 'basic-button',
                 }}
             >
-                <MenuItem onClick={handleClose}>Home</MenuItem>
-                <MenuItem onClick={handleClose}>TV Shows</MenuItem>
-                <MenuItem onClick={handleClose}>Movies</MenuItem>
-                <MenuItem onClick={handleClose}>New & Popular</MenuItem>
-                <MenuItem onClick={handleClose}>My List</MenuItem>
+                {links.map((link) => (
+                    <MenuItem onClick={handleClose} key={link}>
+                        {link}
+                    </MenuItem>
+                ))}
             </Menu>
         </div>
     );

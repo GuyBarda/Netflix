@@ -1,19 +1,21 @@
 import Head from 'next/head';
 import { useRecoilValue } from 'recoil';
-import { modalState, movieState } from '../atoms/modalAtoms';
+import { modalState } from '../atoms/modalAtoms';
+import { getProducts, Product } from '@stripe/firestore-stripe-payments';
+import payments from '../lib/stripe';
+
 import { Movie } from '../typings';
 import requests from '../utils/requests';
+
 import useAuth from '../hooks/useAuth';
+import useList from '../hooks/useList';
+import useSubscription from '../hooks/useSubscription';
 
 import Hero from '../components/Hero';
 import Header from '../components/Header';
 import MovieList from '../components/MovieList';
 import Modal from '../components/Modal';
 import Plans from '../components/Plans';
-import { getProducts, Product } from '@stripe/firestore-stripe-payments';
-import payments from '../lib/stripe';
-import useSubscription from '../hooks/useSubscription';
-import useList from '../hooks/useList';
 
 interface Props {
     netflixOriginals: Movie[];
@@ -41,7 +43,6 @@ const Home = (props: Props) => {
     const { loading, user } = useAuth();
     const showModal = useRecoilValue(modalState);
     const subscription = useSubscription(user);
-    const movie = useRecoilValue(movieState);
     const myList = useList(user?.uid);
 
     if (loading || subscription === null) return null;
@@ -55,17 +56,20 @@ const Home = (props: Props) => {
         >
             <Head>
                 <title>Netflix</title>
-                <link rel="icon" href="/favicon.ico" />
+                <link
+                    rel="icon"
+                    href="https://assets.nflxext.com/ffe/siteui/common/icons/nficon2016.ico"
+                />
             </Head>
 
             <Header />
 
             <main className="relative pl-4 pb-24 lg:space-y-24 lg:pl-16">
                 <Hero movies={props.netflixOriginals} />
-                {myList.length && (
+                {myList.length > 0 && (
                     <MovieList movies={myList} title={'My List'} />
                 )}
-                <section className="md:space-y-24">
+                <section className="md:space-y-12 space-y-6">
                     {genres.map((genre) => (
                         <MovieList
                             title={genre}
@@ -85,42 +89,43 @@ const Home = (props: Props) => {
 export default Home;
 
 export const getServerSideProps = async () => {
-    const products = await getProducts(payments, {
-        includePrices: true,
-        activeOnly: true,
-    })
-        .then((res) => res)
-        .catch((err) => console.log(err));
-    const [
-        netflixOriginals,
-        trendingNow,
-        topRated,
-        actionMovies,
-        comedyMovies,
-        horrorMovies,
-        romanceMovies,
-        documentaries,
-    ] = await Promise.all([
-        fetch(requests.fetchNetflixOriginals).then((res) => res.json()),
-        fetch(requests.fetchTrending).then((res) => res.json()),
-        fetch(requests.fetchTopRated).then((res) => res.json()),
-        fetch(requests.fetchActionMovies).then((res) => res.json()),
-        fetch(requests.fetchComedyMovies).then((res) => res.json()),
-        fetch(requests.fetchHorrorMovies).then((res) => res.json()),
-        fetch(requests.fetchRomanceMovies).then((res) => res.json()),
-        fetch(requests.fetchDocumentaries).then((res) => res.json()),
-    ]);
-    return {
-        props: {
-            netflixOriginals: netflixOriginals.results,
-            trendingNow: trendingNow.results,
-            topRated: topRated.results,
-            actionMovies: actionMovies.results,
-            comedyMovies: comedyMovies.results,
-            horrorMovies: horrorMovies.results,
-            romanceMovies: romanceMovies.results,
-            documentaries: documentaries.results,
+    try {
+        const promises = Object.values(requests).map((request) =>
+            fetch(request).then((res) => res.json())
+        );
+        promises.push(
+            getProducts(payments, {
+                includePrices: true,
+                activeOnly: true,
+            })
+        );
+
+        const [
+            netflixOriginals,
+            trendingNow,
+            topRated,
+            actionMovies,
+            comedyMovies,
+            horrorMovies,
+            romanceMovies,
+            documentaries,
             products,
-        },
-    };
+        ] = await Promise.all(promises);
+
+        return {
+            props: {
+                netflixOriginals: netflixOriginals.results,
+                trendingNow: trendingNow.results,
+                topRated: topRated.results,
+                actionMovies: actionMovies.results,
+                comedyMovies: comedyMovies.results,
+                horrorMovies: horrorMovies.results,
+                romanceMovies: romanceMovies.results,
+                documentaries: documentaries.results,
+                products,
+            },
+        };
+    } catch ({ message }) {
+        console.log(message);
+    }
 };

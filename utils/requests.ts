@@ -1,3 +1,6 @@
+import { DocumentData } from 'firebase/firestore';
+import { Movie } from '../typings';
+
 const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 const BASE_URL = 'https://api.themoviedb.org/3';
 
@@ -11,5 +14,16 @@ const requests = {
     fetchRomanceMovies: `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=en-US&with_genres=10749`,
     fetchDocumentaries: `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=en-US&with_genres=99`,
 };
+
+export const getTrailer = ({ id, media_type }: Movie | DocumentData) =>
+    `https://api.themoviedb.org/3/${media_type || 'movie'}/${id}?api_key=${
+        process.env.NEXT_PUBLIC_API_KEY
+    }&language=en-US&append_to_response=videos`;
+
+export const getSimilars = (id: string) =>
+    `https://api.themoviedb.org/3/movie/${id}/similar?api_key=${process.env.NEXT_PUBLIC_API_KEY}&language=en-US`;
+
+export const getCredits = (id: string) =>
+    `https://api.themoviedb.org/3/movie/${id}/credits?api_key=${process.env.NEXT_PUBLIC_API_KEY}&language=en-US`;
 
 export default requests;

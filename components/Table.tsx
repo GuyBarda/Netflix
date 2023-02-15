@@ -7,11 +7,8 @@ interface Props {
 }
 
 const Table = ({ selectedPlan, products }: Props) => {
-    const textColor = (id: string) => {
-        return id === selectedPlan.id ? 'text-[#e50914]' : 'text-[gray]';
-    };
-
-    console.log(products[0].prices);
+    const textColor = (id: string) =>
+        id === selectedPlan.id ? 'text-[#e50914]' : 'text-[gray]';
 
     return (
         <table>

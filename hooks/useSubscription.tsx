@@ -1,13 +1,12 @@
+import { useState, useEffect } from 'react';
 import {
     onCurrentUserSubscriptionUpdate,
     Subscription,
 } from '@stripe/firestore-stripe-payments';
 import { User } from 'firebase/auth';
-import { useState, useEffect } from 'react';
-import { Snapshot } from 'recoil';
 import payments from '../lib/stripe';
 
-const useSubscription = (user: User | null) => {
+export default function useSubscription(user: User | null) {
     const [subscription, setSubscription] = useState<Subscription | null>(null);
 
     useEffect(() => {
@@ -22,6 +21,4 @@ const useSubscription = (user: User | null) => {
     }, [user]);
 
     return subscription;
-};
-
-export default useSubscription;
+}

@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { goToBillingPortal } from '../lib/stripe';
+
 import useAuth from '../hooks/useAuth';
 import useSubscription from '../hooks/useSubscription';
-import { goToBillingPortal } from '../lib/stripe';
+
 import Loader from './Loader';
 
-function Membership() {
+const Membership = () => {
     const { user } = useAuth();
     const subscription = useSubscription(user);
     const [isBillingLoading, setBillingLoading] = useState(false);
@@ -65,6 +67,6 @@ function Membership() {
             </div>
         </div>
     );
-}
+};
 
 export default Membership;

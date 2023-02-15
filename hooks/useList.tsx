@@ -1,9 +1,10 @@
-import { collection, DocumentData, onSnapshot } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { db } from '../firebase';
+import { collection, DocumentData, onSnapshot } from 'firebase/firestore';
+
 import { Movie } from '../typings';
 
-function useList(uid: string | undefined) {
+export default function useList(uid: string | undefined) {
     const [list, setList] = useState<DocumentData[] | Movie[]>([]);
 
     useEffect(() => {
@@ -24,5 +25,3 @@ function useList(uid: string | undefined) {
 
     return list;
 }
-
-export default useList;

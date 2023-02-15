@@ -3,6 +3,26 @@
 @tailwind utilities;
 
 @layer base {
+    ::-webkit-scrollbar {
+        width: 12px;
+    }
+
+    /* Track */
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+        background: #e50914d6;
+        border-radius: 100vw;
+    }
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+        background: #e50914;
+    }
+
     body {
         @apply bg-[#141414] text-white;
     }

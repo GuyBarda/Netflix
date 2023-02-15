@@ -1,18 +1,16 @@
-import { CheckIcon } from '@heroicons/react/solid';
-import { Product } from '@stripe/firestore-stripe-payments';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useState } from 'react';
-import useAuth from '../hooks/useAuth';
 import { loadCheckout } from '../lib/stripe';
+import useAuth from '../hooks/useAuth';
+import { Product } from '@stripe/firestore-stripe-payments';
+
+import { CheckIcon } from '@heroicons/react/solid';
+
 import Loader from './Loader';
 import Table from './Table';
 
-interface Props {
-    products: Product[];
-}
-
-const Plans = ({ products }: Props) => {
+const Plans = ({ products }: { products: Product[] }) => {
     const { logout, user } = useAuth();
     const [selectedPlan, setSelectedPlan] = useState<Product>(products![0]);
 

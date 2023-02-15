@@ -28,11 +28,7 @@ interface IAuth {
     loading: boolean;
 }
 
-interface Props {
-    children: React.ReactNode;
-}
-
-export const AuthProvider = ({ children }: Props) => {
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [loading, setLoading] = useState(false);
     const [user, setUser] = useState<User | null>(null);
     const [error, setError] = useState(null);
@@ -62,14 +58,13 @@ export const AuthProvider = ({ children }: Props) => {
         setLoading(true);
 
         try {
-            const userCredential = await createUserWithEmailAndPassword(
+            const { user } = await createUserWithEmailAndPassword(
                 auth,
                 email,
                 password
             );
-            setUser(userCredential.user);
+            setUser(user);
             router.push('/');
-            setLoading(false);
         } catch ({ message }) {
             alert(message);
         } finally {

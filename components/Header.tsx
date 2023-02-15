@@ -1,12 +1,13 @@
-import { BellIcon, SearchIcon } from '@heroicons/react/solid';
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import useAuth from '../hooks/useAuth';
+import Link from 'next/link';
+import { BellIcon, SearchIcon } from '@heroicons/react/solid';
+
 import HeaderMenu from './HeaderMenu';
 
 const Header = () => {
     const [isScrolled, setIsScrolled] = useState(false);
-    const { logout } = useAuth();
+
+    const links = ['Home', 'TV Shows', 'Movies', 'New & Popular', 'My List'];
 
     useEffect(() => {
         const handleScroll = () => setIsScrolled(window.scrollY > 0);
@@ -15,8 +16,10 @@ const Header = () => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
+    const bgColor = () => (isScrolled ? 'bg-[#141414]' : 'bg-[#141414]/12');
+
     return (
-        <header className={`${isScrolled && 'bg-[#141414]'}`}>
+        <header className={bgColor()}>
             <div className="flex items-center space-x-2 md:space-x-10">
                 <img
                     src="https://rb.gy/ulxxee"
@@ -25,14 +28,14 @@ const Header = () => {
                     className="cursor-pointer object-contain"
                 />
 
-                <HeaderMenu />
+                <HeaderMenu links={links} />
 
                 <ul className="hidden md:flex gap-4">
-                    <li className="headerLink">Home</li>
-                    <li className="headerLink">TV Shows</li>
-                    <li className="headerLink">Movies</li>
-                    <li className="headerLink">New & Popular</li>
-                    <li className="headerLink">My List</li>
+                    {links.map((link) => (
+                        <li className="header-link" key={link}>
+                            {link}
+                        </li>
+                    ))}
                 </ul>
             </div>
             <div className="flex items-center gap-4 text-sm font-light">
