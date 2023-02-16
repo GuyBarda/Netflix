@@ -1,4 +1,4 @@
-You can view the website at [netlix-clone.vercel](https://netlix-clone-app.vercel.app/login)
+You can view the website at [netlix-clone.vercel](https://netlix-clone-app.vercel.app)
 
 **Please ignore the security warning, this website is secure with Firebase authentication and Stripe payment, so no worries.**
 
