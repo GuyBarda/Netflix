@@ -26,6 +26,7 @@ const Hero = ({ movies }: { movies: Movie[] }) => {
                     }`}
                     alt={randomMovie?.name || 'movie'}
                     fill
+                    sizes="100vw"
                     style={{ objectFit: 'cover' }}
                     priority
                 />

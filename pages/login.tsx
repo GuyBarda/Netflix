@@ -36,6 +36,7 @@ const Login = () => {
                 fill
                 className="-z-10 !hidden opacity-60 sm:!inline"
                 priority
+                sizes="100vw"
                 style={{ objectFit: 'cover' }}
             />
             <img
