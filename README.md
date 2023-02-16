@@ -2,7 +2,7 @@ You can view the website at [netflix-clone.vercel](https://netflix-clone-gfaletc
 
 **Please ignore the security warning, this website is secure with Firebase authentication and Stripe payment, so no worries.**
 
-This application is a clone of Netflix's streaming service and allows users to watch movies and tv shows. I've implemented various features to make this clone as close to the real thing as possible.
+This application is a clone of Netflix's streaming service and allows users to watch movies and tv shows. I've implemented various features to make this clone as close to the real thing as possible. It is also 100% responsive!
 
 ## Features
 
