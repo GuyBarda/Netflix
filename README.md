@@ -1,14 +1,16 @@
-You can view the website at [netflix-clone.up.railway.app](https://netflix-clone.up.railway.app)
+You can view the website at [netflix-clone.vercel](https://netflix-clone-gfaletcx0-guybarda.vercel.app/)
+**Please ignore the security warning, this website is secure with Firebase authentication and Stripe payment, so no worries.**
 
 This application is a clone of Netflix's streaming service and allows users to watch movies and tv shows. I've implemented various features to make this clone as close to the real thing as possible.
 
 ## Features
 
 * User account creation and authentication
+* Choose, update and cancel plans at any time
 * Ability to browse movies and TV shows
+* Ability to add movies and TV shows to "My List" 
+* Ability to view a movie/tv show information and trailer
 * Ability to search for movies and TV shows (coming soon)
-* Ability to add movies and TV shows to "My List" (coming soon)
-* Ability to view a movie/tv show information
 
 ## Technology Stack
 
