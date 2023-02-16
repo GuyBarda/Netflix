@@ -27,7 +27,7 @@ const Hero = ({ movies }: { movies: Movie[] }) => {
                     alt={randomMovie?.name || 'movie'}
                     fill
                     style={{ objectFit: 'cover' }}
-                    // priority
+                    priority
                 />
             </div>
 

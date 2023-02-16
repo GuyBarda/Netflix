@@ -32,10 +32,11 @@ const Login = () => {
             </Head>
             <Image
                 src="https://rb.gy/p2hphi"
-                alt=""
+                alt="netflix login screen"
                 fill
                 className="-z-10 !hidden opacity-60 sm:!inline"
-                objectFit="cover"
+                priority
+                style={{ objectFit: 'cover' }}
             />
             <img
                 src="https://rb.gy/ulxxee"
