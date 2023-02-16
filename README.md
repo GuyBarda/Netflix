@@ -1,4 +1,4 @@
-You can view the website at [netflix-clone.vercel](https://netflix-clone-gfaletcx0-guybarda.vercel.app/)
+You can view the website at [netlix-clone.vercel](https://netlix-clone-app.vercel.app/login)
 
 **Please ignore the security warning, this website is secure with Firebase authentication and Stripe payment, so no worries.**
 
