@@ -1,9 +1,9 @@
 **Please ignore the security warning, this website is secure with Firebase authentication and Stripe payment, so no worries.**
 **For buying subscriptions please use this test credit card:**
+
 4242424242424242
 cvv: any 3 digits
 expiry date: any future date
-
 
 You can view the website at [netlix-clone.vercel](https://netlix-clone-app.vercel.app)
 
